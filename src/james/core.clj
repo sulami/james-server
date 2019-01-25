@@ -2,7 +2,7 @@
   (:require [clojure.spec.alpha :as s]
             [james.specs]))
 
-(defn filter-plugins
+(defn- filter-plugins
   "Filter out plugins that match the current input."
   [input plugins]
   (filter #(-> %
@@ -24,3 +24,19 @@
   (->> plugins
        (filter-plugins input)
        (mapcat (partial run-plugin input))))
+
+(defn- sort-results
+  "Well, sort results."
+  [results preferences]
+  (sort-by :relevance > results))
+
+(defn- attach-positions
+  "Attach positions to ordered results."
+  [results]
+  (map #(assoc %1 :position %2) results (range)))
+
+(defn prepare-results
+  [results preferences]
+  (-> results
+      (sort-results preferences)
+      attach-positions))
