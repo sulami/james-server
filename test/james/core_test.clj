@@ -27,6 +27,17 @@
     (is (= (range 3)
            (map :position (prepare-results example-results {})))))
 
+  (testing "attaches hashes"
+    (is (->> (prepare-results example-results {})
+             (map #(contains? % :hash))
+             (every? true?))))
+
+  (testing "generates unique hashes"
+    (let [hashes (->> (prepare-results example-results {})
+                      (map :hash))]
+      (is (= (sort hashes)
+             (-> hashes set list* sort)))))
+
   (testing "orders by relevance"
     (is (= (->> example-results (map :relevance) (sort >))
            (map :relevance (prepare-results example-results {}))))))
