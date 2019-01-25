@@ -14,6 +14,7 @@
                    :james.plugin/match-re
                    :james.plugin/eval-fn]))
 
+(s/def :james.result/hash string?)
 (s/def :james.result/title string?)
 (s/def :james.result/subtitle string?)
 (s/def :james.result/relevance
@@ -25,7 +26,8 @@
   (s/and int? #(<= 0 %)))
 
 (s/def :james/result
-  (s/keys :req-un [:james.result/title
+  (s/keys :req-un [:james.result/hash
+                   :james.result/title
                    :james.result/subtitle
                    :james.result/relevance
                    :james.result/action]
