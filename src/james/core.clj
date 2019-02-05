@@ -1,8 +1,7 @@
 (ns james.core
   (:require [clojure.spec.alpha :as s]
             [james.specs]
-            [james.plugins.file-finder :as ff])
-  (:import [jline.console ConsoleReader]))
+            [james.plugins.file-finder :as ff]))
 
 (defn- filter-plugins
   "Filters out plugins that match the current input."
@@ -59,33 +58,3 @@
       attach-hashes
       (sort-results query preferences)
       attach-positions))
-
-(defn- print-prompt
-  "Prints the prompt."
-  [input]
-  (print (str "\033[2K\r> " input))
-  (flush))
-
-(defn- handle-input
-  "Handles the special inputs, dispatches the runner.
-  Returns nil if we should exit."
-  [input keyint]
-  (case keyint
-    ;; Backspace
-    127 (apply str (butlast input))
-    ;; Return
-    13 nil
-    ;; Default
-    (str input (char keyint))))
-
-(defn -main []
-  (loop [input ""
-         results []]
-    (print-prompt input)
-    (let [cr (ConsoleReader.)
-          keyint (.readCharacter cr)
-          new-input (handle-input input keyint)
-          new-results (run-plugins input [ff/file-finder-plugin])]
-      (if (nil? new-input)
-        (print "\033[2K\r")
-        (recur new-input new-results)))))
