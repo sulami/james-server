@@ -1,7 +1,6 @@
 (ns james.core
   (:require [clojure.spec.alpha :as s]
-            [james.specs]
-            [james.plugins.file-finder :as ff]))
+            [james.specs]))
 
 (defn- filter-plugins
   "Filters out plugins that match the current input."
