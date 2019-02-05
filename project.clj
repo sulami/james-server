@@ -1,4 +1,4 @@
-(defproject james-server "0.1.1-SNAPSHOT"
+(defproject james-server "0.1.1"
   :description "Launcher Server"
   :url "http://github.com/sulami/james-server"
   :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
