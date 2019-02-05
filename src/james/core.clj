@@ -1,6 +1,7 @@
 (ns james.core
   (:require [clojure.spec.alpha :as s]
-            [james.specs])
+            [james.specs]
+            [james.plugins.file-finder :as ff])
   (:import [jline.console ConsoleReader]))
 
 (defn- filter-plugins
@@ -37,11 +38,12 @@
   (map #(assoc %1 :hash (calculate-hash %1)) results))
 
 (defn- sort-results
-  "Well, sorts results."
+  "Well, sorts results.
+  If there is a previous choice for this query it will be the top result."
   [results query preferences]
-  (let [preferred (get preferences [:past-choices query])
-        top-choice (some #(= (:hash %) preferred) results)]
-    (if preferred
+  (let [preferred (get-in preferences [:past-choices query])
+        top-choice (some #(when (= (:hash %) preferred) %) results)]
+    (if top-choice
       (conj (sort-by :relevance > (remove (partial = top-choice) results))
             (assoc-in top-choice [:relevance] 1))
       (sort-by :relevance > results))))
@@ -77,11 +79,13 @@
     (str input (char keyint))))
 
 (defn -main []
-  (loop [input ""]
+  (loop [input ""
+         results []]
     (print-prompt input)
     (let [cr (ConsoleReader.)
           keyint (.readCharacter cr)
-          new-input (handle-input input keyint)]
+          new-input (handle-input input keyint)
+          new-results (run-plugins input [ff/file-finder-plugin])]
       (if (nil? new-input)
         (print "\033[2K\r")
-        (recur new-input)))))
+        (recur new-input new-results)))))

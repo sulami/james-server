@@ -50,4 +50,6 @@
                        {"query" (calculate-hash (second results))}}]
       (is (= "b"
              (-> results
-                 (prepare-results "query" preferences)))))))
+                 (prepare-results "query" preferences)
+                 first
+                 :title))))))
