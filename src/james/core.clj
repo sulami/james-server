@@ -1,6 +1,7 @@
 (ns james.core
   (:require [clojure.spec.alpha :as s]
-            [james.specs]))
+            [james.specs]
+            [james.fuzzy :refer [fuzzy-find]]))
 
 (defn- filter-plugins
   "Filters out plugins that match the current input."
@@ -40,11 +41,12 @@
   If there is a previous choice for this query it will be the top result."
   [results query preferences]
   (let [preferred (get-in preferences [:past-choices query])
-        top-choice (some #(when (= (:hash %) preferred) %) results)]
+        top-choice (some #(when (= (:hash %) preferred) %) results)
+        sort-fn (partial fuzzy-find :title query)]
     (if top-choice
-      (conj (sort-by :relevance > (remove (partial = top-choice) results))
+      (conj (sort-fn (remove (partial = top-choice) results))
             (assoc-in top-choice [:relevance] 1))
-      (sort-by :relevance > results))))
+      (sort-fn results))))
 
 (defn- attach-positions
   "Attaches positions to ordered results."

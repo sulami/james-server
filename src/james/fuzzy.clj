@@ -1,8 +1,5 @@
 (ns james.fuzzy)
 
-(def anything ".*?")
-(def anything-greedy ".*")
-
 (defn- query->regex
   "Builds a query for a regex."
   [query]
@@ -27,7 +24,7 @@
         match-length (comp count (partial re-find regex) transformer)
         leadup (->> query
                     first
-                    (str anything-greedy)
+                    (str ".*")
                     re-pattern
                     (partial re-find)
                     (comp count))]

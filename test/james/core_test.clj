@@ -11,7 +11,9 @@
    :eval-fn (fn [_] (take 3 (sg/generate (s/gen :james/results))))})
 
 (def example-results
-  (repeatedly 3 #(sg/generate (s/gen :james/result))))
+  (->> #(sg/generate (s/gen :james/result))
+       (repeatedly 3)
+       (map #(assoc % :title "x"))))
 
 (deftest runner-test
   (testing "doesn't run plugins if their re doesn't match"
@@ -25,10 +27,10 @@
 (deftest preparer-test
   (testing "attaches positions"
     (is (= (range 3)
-           (map :position (prepare-results example-results "" {})))))
+           (map :position (prepare-results example-results "x" {})))))
 
   (testing "attaches hashes"
-    (is (->> (prepare-results "" example-results {})
+    (is (->> (prepare-results example-results "x" {})
              (map #(contains? % :hash))
              (every? true?))))
 
@@ -38,14 +40,10 @@
       (is (= (sort hashes)
              (-> hashes set list* sort)))))
 
-  (testing "orders by relevance"
-    (is (= (->> example-results (map :relevance) (sort >))
-           (map :relevance (prepare-results example-results "" {})))))
-
   (testing "considers past choices"
-    (let [results (list {:title "a" :relevance 0.1}
-                        {:title "b" :relevance 0.2}
-                        {:title "c" :relevance 0.3})
+    (let [results (list {:title "a"}
+                        {:title "b"}
+                        {:title "c"})
           preferences {:past-choices
                        {"query" (calculate-hash (second results))}}]
       (is (= "b"
