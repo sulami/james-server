@@ -6,10 +6,11 @@
 (defn- query->regex
   "Builds a query for a regex."
   [query]
-  (->> query
-       (interpose anything)
-       (apply str)
-       re-pattern))
+  (-> query
+      (interleave (map (partial format "[^%c]*") query))
+      butlast
+      (->> (apply str))
+      re-pattern))
 
 (defn- fuzzy-match
   "Returns a fuzzy matching function for filtering."

@@ -42,4 +42,8 @@
 
   (testing "it prefers shorter matches over early ones"
     (is (= '("xxxabc" "axbc")
-           (sut/fuzzy-find "abc" ["axbc" "xxxabc"])))))
+           (sut/fuzzy-find "abc" ["axbc" "xxxabc"]))))
+
+  (testing "it considers the shortest possible match the best"
+    (is (= '("aaaabc" "xxxaxabc")
+           (sut/fuzzy-find "abc" ["xxxaxabc" "aaaabc"])))))
