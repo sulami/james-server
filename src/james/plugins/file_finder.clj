@@ -1,6 +1,8 @@
 (ns james.plugins.file-finder
   (:require [clojure.java.io :as io]))
 
+;; TODO exclude hidden directories
+
 (def search-dirs
   ["/Users/robinschroer/build/spielwiese/"])
 
@@ -18,8 +20,7 @@
   {:title (.getName result)
    :subtitle (.getParent result)
    :action nil
-   :plugin nil
-   :relevance 1}) ;; TODO actual values
+   :source "file-finder"}) ;; TODO actual values
 
 (defn file-finder-eval
   [input]
